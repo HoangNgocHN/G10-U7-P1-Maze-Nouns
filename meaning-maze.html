@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MEANING MAZE — Unit 7</title>
+  <link rel="stylesheet" href="meaning-maze.css">
+</head>
+<body>
+
+<!-- FEEDBACK FLASH -->
+<div class="feedback-flash" id="feedbackFlash"></div>
+
+<!-- WORD MODAL -->
+<div class="modal-backdrop" id="wordModal">
+  <div class="modal-box">
+    <h2 id="modal-word"></h2>
+    <div class="phonetic" id="modal-phonetic"></div>
+    <p id="modal-body" style="margin-top:14px;"></p>
+    <button class="btn-ghost" onclick="closeModal()">✕ CLOSE</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 1 — TITLE
+     ═══════════════════════════════════════════════ -->
+<div id="screen-title" class="screen active">
+
+  <div class="game-logo">
+    <div class="unit-tag">Grade 10 · Unit 7 · Concept Nouns</div>
+    <h1>MEANING<br>MAZE</h1>
+    <div class="subtitle">FIND YOUR WAY TO THE RIGHT MEANING.</div>
+  </div>
+
+  <div class="name-box">
+    <label>EXPLORER CALLSIGN</label>
+    <input type="text" id="playerName" placeholder="Enter your name…"
+           maxlength="24" autocomplete="off" />
+  </div>
+
+  <div class="how-to-play">
+    <div class="htp-title">⬡ HOW TO PLAY</div>
+    <div class="htp-grid">
+      <div class="htp-step"><span>📖</span>An English word appears at the top</div>
+      <div class="htp-step"><span>🚪</span>4 glowing portals wait at the maze exits</div>
+      <div class="htp-step"><span>🧭</span>Navigate with ← → ↑ ↓ arrow keys</div>
+      <div class="htp-step"><span>✅</span>Walk into the portal with the correct Vietnamese meaning!</div>
+    </div>
+  </div>
+
+  <button class="btn-primary" onclick="startGame()">▶ ENTER MAZE</button>
+
+  <div class="divider"></div>
+
+  <div style="text-align:center">
+    <div class="section-label">Vocabulary Index — tap to review</div>
+    <div class="word-index" id="wordIndex"></div>
+  </div>
+
+  <div style="height:40px"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 2 — GAME
+     ═══════════════════════════════════════════════ -->
+<div id="screen-game" class="screen">
+
+  <!-- HUD -->
+  <div class="hud">
+    <div class="hud-player" id="hudPlayer">PLAYER</div>
+    <div class="hud-item">
+      <div class="hud-label">Q</div>
+      <div class="hud-val" id="hudQ">1/11</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">SCORE</div>
+      <div class="hud-val" id="hudScore">0</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">COMBO</div>
+      <div class="hud-val accent" id="hudCombo">x1</div>
+    </div>
+    <div class="hud-item">
+      <div class="hud-label">HP</div>
+      <div class="hud-val" id="hudHp">❤️❤️❤️❤️❤️</div>
+    </div>
+  </div>
+
+  <!-- Progress bar -->
+  <div class="progress-strip">
+    <div class="progress-fill" id="progressFill" style="width:0%"></div>
+  </div>
+
+  <!-- Word banner -->
+  <div class="word-banner">
+    <div class="wb-label">FIND THE MEANING OF</div>
+    <div class="wb-word"  id="wbWord">—</div>
+    <div class="wb-phonetic" id="wbPhonetic"></div>
+    <!-- Timer bar -->
+    <div class="timer-track">
+      <div class="timer-fill" id="timerFill" style="width:100%"></div>
+    </div>
+  </div>
+
+  <!-- Maze layout: [LEFT] [CANVAS] [RIGHT] with TOP/BOTTOM above/below -->
+  <div class="maze-layout">
+
+    <!-- TOP portal -->
+    <div class="portal-label portal-top" id="portal-up">
+      <div class="pl-key">↑</div>
+      <div class="pl-text">—</div>
+    </div>
+
+    <div class="maze-row">
+      <!-- LEFT portal -->
+      <div class="portal-label portal-left" id="portal-left">
+        <div class="pl-key">←</div>
+        <div class="pl-text">—</div>
+      </div>
+
+      <!-- Canvas + READY overlay -->
+      <div class="canvas-wrap">
+        <canvas id="mazeCanvas"></canvas>
+        <div id="mazeReady" class="maze-ready-overlay"></div>
+      </div>
+
+      <!-- RIGHT portal -->
+      <div class="portal-label portal-right" id="portal-right">
+        <div class="pl-key">→</div>
+        <div class="pl-text">—</div>
+      </div>
+    </div>
+
+    <!-- BOTTOM portal -->
+    <div class="portal-label portal-bottom" id="portal-down">
+      <div class="pl-key">↓</div>
+      <div class="pl-text">—</div>
+    </div>
+
+  </div><!-- /maze-layout -->
+
+  <div class="maze-hint">← → ↑ ↓ &nbsp;NAVIGATE &nbsp;·&nbsp; WALK INTO THE CORRECT PORTAL &nbsp;·&nbsp; ESC = QUIT</div>
+
+</div><!-- /screen-game -->
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN 3 — RESULTS
+     ═══════════════════════════════════════════════ -->
+<div id="screen-results" class="screen">
+  <div class="results-title" id="resultsTitle">MISSION COMPLETE</div>
+  <div class="rank-badge" id="rankBadge"></div>
+
+  <div class="stat-grid">
+    <div class="stat-card">
+      <div class="stat-val" id="resScore">0</div>
+      <div class="stat-label">TOTAL SCORE</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="resCorrect">0</div>
+      <div class="stat-label">CORRECT</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="resAccuracy">0%</div>
+      <div class="stat-label">ACCURACY</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="resBestCombo">x1</div>
+      <div class="stat-label">BEST COMBO</div>
+    </div>
+  </div>
+
+  <div class="review-list" id="reviewList"></div>
+
+  <div class="result-btns">
+    <button class="btn-primary" onclick="playAgain()">↺ PLAY AGAIN</button>
+    <button class="btn-ghost"   onclick="showTitle()">⌂ MENU</button>
+  </div>
+
+  <div class="results-note">
+    Use ↺ to explore a new maze · Same vocabulary, new paths every time
+  </div>
+</div>
+
+<script src="meaning-maze.js"></script>
+</body>
+</html>
